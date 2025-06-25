@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIHCA</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+    }
+
+    #map {
+      position: absolute;
+      top: 56px; /* Altura del navbar */
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+    }
+
+    .sidebar {
+      position: absolute;
+      top: 56px;
+      left: 0;
+      height: calc(100% - 56px);
+      width: 300px;
+      background-color: #f8f9fa;
+      border-right: 1px solid #ccc;
+      padding: 1rem;
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sidebar.show {
+      transform: translateX(0);
+    }
+
+    /*Ubicacion del control de zoom*/
+    .leaflet-control-zoom {
+      bottom: 30px !important; /* Ajusta este valor según lo que necesites */
+      right: 0px !important;
+    }
+
+
+    /* Geolocalizacion ubicada arriba del control de zoom */
+    #locate-btn {
+      position: absolute;
+      bottom: 130px; /* justo arriba del control de zoom */
+      right: 10px;
+      z-index: 1000;
+    }
+
+    #locate-btn a {
+      display: block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      background: white;
+      color: black;
+      text-decoration: none;
+      font-size: 18px;
+      border-radius: 4px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+
+    /* Estilo de la barra inferior */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background-color: #f8f9fa;
+      border-top: 1px solid #ccc;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    /* Mostrar la barra */
+    .bottom-bar.show {
+      transform: translateY(0);
+    }    
+
+    /*Galeria de imagenes dentro del panel inferior*/
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 250px; /* Ajusta a tu gusto */
+      background-color: #f8f9fa;
+      border-top: 1px solid #ccc;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .bottom-bar.show {
+      transform: translateY(0);
+    }
+
+    .gallery-img {
+      height: 100px;
+      object-fit: cover;
+      border-radius: 5px;
+      max-width: calc(33% - 10px); /* 3 imágenes por fila aprox. */
+    }
+
+
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <!-- Navbar fijo -->
+  <nav class="navbar navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+      <button id="toggleSidebar" class="btn btn-outline-light btn-sm me-2">☰</button>
+      <a class="navbar-brand" href="#">INEGI</a>
+    </div>
+  </nav>
+
+  <!-- Sidebar superpuesta -->
+  <div id="sidebar" class="sidebar">
+    <h5>Panel</h5>
+    <ul class="nav nav-tabs" id="sidebarTabs" role="tablist">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">Buscar</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2">Marcadores</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab3">Info</button></li>
+    </ul>
+    <div class="tab-content mt-3">
+      <div class="tab-pane fade show active" id="tab1">
+        <h6>Elije la entidad</h6>
+        <div id="entidadesDIV"></div>
+
+        <div id="capitalesDIV"></div>
+
+        <div id="botonReestablecer"></div>
+
+      </div>
+      <div class="tab-pane fade" id="tab2">
+        <p>Lista de cualquier cosa.</p>
+      </div>
+      <div class="tab-pane fade" id="tab3">
+        <p>Informacion de otra cosa</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mapa -->
+  <div id="map"></div>
+
+  <!-- Botón personalizado -->
+  <div id="locate-btn" class="leaflet-bar leaflet-control" title="Mi ubicación">
+    <a href="#" role="button">📍</a>
+  </div>
+
+  <!-- Botón flotante para mostrar/ocultar la barra -->
+  <button id="toggleBottomBar" class="btn btn-primary rounded-pill position-absolute" style="bottom: 20px; right: 20px; z-index:1001;">
+    ⬆ Detalles
+  </button>
+
+
+  <!-- Barra inferior oculta inicialmente -->
+
+      <div id="bottomBar" class="bottom-bar">
+        <div class="p-2 h-100 overflow-auto">
+          <h6>Cortes disponibles</h6>
+          <div class="d-flex flex-wrap gap-2 justify-content-center">
+            <img src="./img/1725.png" class="gallery-img" alt="No se encontro la imagen"/>
+            <img src="./img/1817.png" class="gallery-img" alt="No se encontro la imagen"/>
+            <img src="./img/1854.png" class="gallery-img" alt="No se encontro la imagen"/>
+            <img src="./img/1894.png" class="gallery-img" alt="No se encontro la imagen"/>
+            <img src="./img/1947.png" class="gallery-img" alt="No se encontro la imagen"/>
+            <img src="./img/1964.png" class="gallery-img" alt="No se encontro la imagen"/>
+            <img src="./img/1982.png" class="gallery-img" alt="No se encontro la imagen"/>
+            <img src="./img/1993.png" class="gallery-img" alt="No se encontro la imagen"/>            
+            <img src="./img/2000.png" class="gallery-img" alt="No se encontro la imagen"/>
+            <img src="./img/2010.png" class="gallery-img" alt="No se encontro la imagen"/>
+            <img src="./img/2017.png" class="gallery-img" alt="No se encontro la imagen"/>            
+          </div>
+        </div>
+
+  <!-- Scripts -->
+  <script>
+
+  // Inicializar el mapa SIN el control de zoom
+    const map = L.map('map', {
+    center: [19.2866, -99.6557],
+    zoom: 6,
+    zoomControl: false // Desactiva el control por defecto (que va arriba a la izquierda)
+    });
+
+    // Añadir el control de zoom en la esquina inferior derecha
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+ 
+
+    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri'
+    });
+
+    L.control.layers({ 'OpenStreetMap': osm, 'Satélite Esri': esri }).addTo(map);
+
+    L.marker([19.2866, -99.6557]).addTo(map)
+      .bindPopup('¡Hola desde Toluca!').openPopup();
+
+    // Toggle sidebar
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('show');
+    });
+
+
+
+    // Función para ubicar al usuario
+    document.getElementById('locate-btn').addEventListener('click', function (e) {
+      e.preventDefault();
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            map.setView([lat, lng], 16); // acercamos más
+            L.marker([lat, lng]).addTo(map)
+              .bindPopup('¡Esta es tu ubicación aproximada!').openPopup();
+          },
+          function () {
+            alert('No pudimos obtener tu ubicación 😕');
+          }
+        );
+      } else {
+        alert('Tu navegador no soporta geolocalización');
+      }
+    });
+
+// JS para controlar visibilidad
+const bottomBar = document.getElementById('bottomBar');
+const toggleBtn2 = document.getElementById('toggleBottomBar');
+
+toggleBtn2.addEventListener('click', () => {
+  bottomBar.classList.toggle('show');
+});
+llenaCBXentidades();
+llenaCBXcapitales();
+
+
+
+
+
+
+async function llenaCBXentidades() {
+  const url = "http://localhost:4000/spatyal/getNombresEntidades";
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      const entidadesJSON = await response.json();
+      //console.log(entidadesJSON);      
+      htmlCode=
+      '<select class="form-select" aria-label="Default select example" onchange="borrarContenidoMapa(); loadCapital(this.value); loadEntidad(this.value);" id="entidadesCBX">'+
+          '<option selected>Entidades</option>';
+      entidadesJSON.forEach(element => {
+
+        htmlCode+='<option value="'+element.cve_agee+'">'+element.nomgeo+'</option>';        
+
+      });      
+      
+      htmlCode+='</select>';
+      //console.log(htmlCode);
+      document.getElementById("entidadesDIV").innerHTML=htmlCode;
+      
+    }
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+
+
+async function llenaCBXcapitales(){
+  //const cve_agee=document.getElementById("entidadesCBX").value;
+
+
+  const url = `http://localhost:4000/spatyal/getCapitales`;
+  //console.log(url);
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      let capitalesJSON = await response.json();
+      //console.log(municipiosJSON);
+      //municipiosJSON=municipiosJSON.Respuesta[0];            
+      htmlCode=
+      '<h6>Elije la capital</h6>'+
+      '<select class="form-select" aria-label="Default select example" id="capitalesCBX" onchange="borrarContenidoMapa(); loadCapital(this.value); loadEntidad(this.value);">'+
+          '<option selected>Capitales</option>';      
+      capitalesJSON.forEach(element => {
+        //console.log(element.cve_agee);
+        htmlCode+='<option value="'+element.cve_agee+'">'+element.capital+'</option>';        
+      });      
+      htmlCode+='</select>';
+      //console.log(htmlCode);
+      document.getElementById("capitalesDIV").innerHTML=htmlCode;          
+    }
+
+  } catch (error) {
+    console.error(error.message);
+    
+  }
+
+}
+
+
+async function loadCapital(cve_agee) {
+  const url = `http://localhost:4000/spatyal/getCapital/${cve_agee}`;
+  //console.log(url);
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      let capitalesJSON = await response.json();
+      capitalesJSON=capitalesJSON[0].geojson;      
+      // extraemos cordenadas
+      x= capitalesJSON.features[0].geometry.coordinates[0];
+      y= capitalesJSON.features[0].geometry.coordinates[1];
+      //extraemos la capital
+      const capital=capitalesJSON.features[0].properties.capital;
+      //extraemos  el nombre de la entidad
+      const nom_agee=capitalesJSON.features[0].properties.nom_agee;      
+      //console.log(nom_agee);
+      let marker = L.marker([y, x]).addTo(map);
+      marker.bindPopup(`<b>${capital}</b><br>${nom_agee}`).openPopup();
+      //map.flyTo([y, x], 10);      
+    }
+  } catch (error) {
+    console.error(error.message);
+    
+  }
+}
+
+
+async function loadEntidad(cve_agee) {
+  
+  const url = `http://localhost:4000/spatyal/getEntidadPolygon/${cve_agee}`;
+  //console.log(url);
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      //primero borramos lo que tiene el mapa actualmente
+      //borrarContenidoMapa();
+      let entidadJSON = await response.json();
+      entidadJSON=entidadJSON[0].geojson.features[0];
+      //console.log(entidadJSON.geometry.coordinates[0]);
+      //console.log(entidadJSON);      
+      const capa = L.geoJSON(entidadJSON).addTo(map);
+      map.fitBounds(capa.getBounds());
+    }
+  } catch (error) {
+    console.error(error.message);    
+  }  
+}
+
+
+function borrarContenidoMapa(){
+      map.eachLayer(function(layer) {
+        // Evita eliminar la capa base (como el mapa de fondo)
+        if (!(layer instanceof L.TileLayer)) {
+          map.removeLayer(layer);
+        }
+      });  
+}
+  </script>
+</body>
+</html>
