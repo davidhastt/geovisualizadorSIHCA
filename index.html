@@ -166,7 +166,7 @@
 
   <!-- Botón flotante para mostrar/ocultar la barra -->
   <button id="toggleBottomBar" class="btn btn-primary rounded-pill position-absolute" style="bottom: 20px; right: 20px; z-index:1001;">
-    ⬆ Detalles
+    ⬆ Cortes
   </button>
 
 
@@ -174,7 +174,22 @@
 
       <div id="bottomBar" class="bottom-bar">
         <div class="p-2 h-100 overflow-auto">
-          <h6>Cortes disponibles</h6>
+          <p>Dale click sobre una imagen para mostrar informacion por corte temporal</p>
+          <div class="d-flex flex-wrap gap-2 justify-content-center">
+            <div id="cutsCards">
+                <div class="spinner-grow text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>              
+                <div class="spinner-grow text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div> 
+                <div class="spinner-grow text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>  
+
+            </div>
+          </div>
+          <!--
           <div class="d-flex flex-wrap gap-2 justify-content-center">
             <img src="./img/1725.png" class="gallery-img" alt="No se encontro la imagen"/>
             <img src="./img/1817.png" class="gallery-img" alt="No se encontro la imagen"/>
@@ -189,13 +204,13 @@
             <img src="./img/2017.png" class="gallery-img" alt="No se encontro la imagen"/>            
           </div>
         </div>
-
+        -->
   <!-- Scripts -->
   <script>
 
   // Inicializar el mapa SIN el control de zoom
     const map = L.map('map', {
-    center: [19.2866, -99.6557],
+    center: [23.691111538819403, -102.32562360568357],
     zoom: 6,
     zoomControl: false // Desactiva el control por defecto (que va arriba a la izquierda)
     });
@@ -214,8 +229,8 @@
 
     L.control.layers({ 'OpenStreetMap': osm, 'Satélite Esri': esri }).addTo(map);
 
-    L.marker([19.2866, -99.6557]).addTo(map)
-      .bindPopup('¡Hola desde Toluca!').openPopup();
+    /*L.marker([19.2866, -99.6557]).addTo(map)
+      .bindPopup('¡Hola desde Toluca!').openPopup();*/
 
     // Toggle sidebar
     const toggleBtn = document.getElementById('toggleSidebar');
@@ -252,15 +267,92 @@
 const bottomBar = document.getElementById('bottomBar');
 const toggleBtn2 = document.getElementById('toggleBottomBar');
 
-toggleBtn2.addEventListener('click', () => {
+toggleBtn2.addEventListener('click', () => {  
   bottomBar.classList.toggle('show');
 });
 llenaCBXentidades();
 llenaCBXcapitales();
+loadCapitals();
+
+
+async function loadCapitals(){
+
+  const url = `http://localhost:4000/spatyal/getCapitales`;
+  //console.log(url);
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      let capitalsArr = await response.json();
+
+      capitalsArr.forEach(element=>{
+          //console.log(element.capital);          
+          L.marker([element.y, element.x]).addTo(map)
+          .bindPopup(`<b>${element.capital}</b><br>${element.nom_agee}`);          
+      });
+
+    }
+  } catch (error) {
+    console.error(error.message);
+  }
+
+}
 
 
 
+async function loadCuts(cve_agee){
 
+  const url = `http://localhost:4000/construcciones/cortes/${cve_agee}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      let cortesArr = await response.json();
+      cortesArr=cortesArr.Respuesta;
+      //console.log(cortesArr); 
+      htmlCode="";
+
+      if (cortesArr.length > 0){
+          htmlCode+='<div class="row row-cols-1 row-cols-md-5 g-4">';
+          cortesArr.forEach(element => {
+            //console.log(element.cortes);
+            htmlCode+=              
+                '<div class="col">'+
+                  '<div class="card">'+
+                    '<div class="card-body">'+
+                      '<h5 class="card-title">'+element.cortes+'</h5>'+
+                      '<p class="card-text">Click para cargar las capas del año '+element.cortes+'</p>'+
+                      '<a href="#" class="btn btn-primary">Cargar capas</a>'+                      
+                    '</div>'+
+                  '</div>'+
+                '</div>'          
+          });
+
+          htmlCode+='</div>';
+    }else{
+            htmlCode+=
+              '<div class="card text-center mb-3" style="width: 18rem;">'+
+                  '<div class="card-body">'+
+                    '<h5 class="card-title">Sin datos</h5>'+
+                    '<p class="card-text">Sin datos</p>'+
+                  '</div>'+
+                '</div>';
+    }
+    document.getElementById("cutsCards").innerHTML=htmlCode;
+      
+
+    }
+  } catch (error) {
+    console.error(error.message);
+  }
+
+
+
+}
 
 
 async function llenaCBXentidades() {
@@ -353,7 +445,9 @@ async function loadCapital(cve_agee) {
       //console.log(nom_agee);
       let marker = L.marker([y, x]).addTo(map);
       marker.bindPopup(`<b>${capital}</b><br>${nom_agee}`).openPopup();
-      //map.flyTo([y, x], 10);      
+      //map.flyTo([y, x], 10); 
+      //mostramos la barra inferior
+      document.getElementById('bottomBar').classList.add('show'); 
     }
   } catch (error) {
     console.error(error.message);
@@ -381,11 +475,15 @@ async function loadEntidad(cve_agee) {
       //console.log(entidadJSON);      
       const capa = L.geoJSON(entidadJSON).addTo(map);
       map.fitBounds(capa.getBounds());
+      //mostramos la barra inferior
+      document.getElementById('bottomBar').classList.add('show');
+      loadCuts(cve_agee);
     }
   } catch (error) {
     console.error(error.message);    
   }  
 }
+
 
 
 function borrarContenidoMapa(){
