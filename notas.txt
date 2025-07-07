@@ -1,0 +1,48 @@
+
+Usar shapefile
+Usar el epsg correcto
+
+faltan las manzanas
+
+ "anio" =1817
+
+hugo.riovazquez@service.ionos.mx
+
+
+Buenos dias! mi nombre es David, anteriormente tenia un contrato con ustedes, pero tuve que dejar sus servicios por causas de fuerza mayor. 
+
+Entonces anteriormente tenia un dominio registado con ustedes llamado: centroescazu.org, actualmente el pago anual por el registro a caducado y no podemos usarlo hasta que ustedes lo liberen, ¿qué puedo hacer?
+
+
+// Simulamos dos capas por categoría
+const capaComercial = L.polygon([
+  [19.286, -99.655],
+  [19.287, -99.656],
+  [19.285, -99.657]
+], { color: 'orange', fillOpacity: 0.5 }).addTo(map);
+
+const capaVerde = L.polygon([
+  [19.288, -99.658],
+  [19.289, -99.659],
+  [19.287, -99.660]
+], { color: 'green', fillOpacity: 0.5 }).addTo(map);
+
+// Función para encender/apagar capas
+function toggleLayer(tipo) {
+  if (tipo === 'comercial') {
+    if (map.hasLayer(capaComercial)) {
+      map.removeLayer(capaComercial);
+    } else {
+      map.addLayer(capaComercial);
+    }
+  } else if (tipo === 'verde') {
+    if (map.hasLayer(capaVerde)) {
+      map.removeLayer(capaVerde);
+    } else {
+      map.addLayer(capaVerde);
+    }
+  }
+}
+
+en postgres crea la tablas: rasgos, nombres_ragos, direcciones y despues inserta los datos que tienes en csv
+asegurate que los campos existan segun el modelo de star uml

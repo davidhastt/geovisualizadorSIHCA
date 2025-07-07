@@ -116,9 +116,18 @@
     }
 
 
+    /* Simbologia del panel lateral    */
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #000;
+      border-radius: 2px;
+    }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="config.js"></script>
 </head>
 <body>
   <!-- Navbar fijo -->
@@ -131,27 +140,72 @@
 
   <!-- Sidebar superpuesta -->
   <div id="sidebar" class="sidebar">
-    <h5>Panel</h5>
+    <h5>Simbología</h5>
     <ul class="nav nav-tabs" id="sidebarTabs" role="tablist">
-      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">Buscar</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2">Marcadores</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab3">Info</button></li>
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">Principal</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2">Base</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab3">Buscar</button></li>
     </ul>
     <div class="tab-content mt-3">
       <div class="tab-pane fade show active" id="tab1">
+        <div class="legend-item d-flex align-items-center mb-2">
+          <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('pl')">
+          <div class="legend-color" style="background-color: #cd2743;"></div>
+          <span class="ms-2">Poligono de localidad</span>
+        </div>
+
+        <div class="legend-item d-flex align-items-center mb-2">
+          <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('manzanas')">
+          <div class="legend-color" style="background-color: #f4ea0c;"></div>
+          <span class="ms-2">Manzanas</span>
+        </div>
+
+
+        <div class="legend-item d-flex align-items-center mb-2">
+          <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('vialidades')">
+          <div class="legend-color" style="background-color: #69685f;"></div>
+          <span class="ms-2">Vialidades</span>
+        </div>
+
+
+      </div>
+
+      <div class="tab-pane fade" id="tab2">
+<!-- Dentro del tab "Capas" -->
+<div id="leyenda" class="mt-2">
+  <h6>🗂️ Simbología</h6>
+
+  <div class="legend-item d-flex align-items-center mb-2">
+    <input type="checkbox" checked class="form-check-input me-2" onchange="toggleLayer('rios')">
+    <div class="legend-color" style="background-color: blue;"></div>
+    <span class="ms-2">Rios</span>
+  </div>
+
+  
+  <div class="legend-item d-flex align-items-center mb-2">
+    <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('cl')">
+    <div class="legend-color" style="background-color: #c14a31;"></div>
+    <span class="ms-2">Cotas</span>
+  </div>
+  
+
+</div>
+
+        <!--
+        <div class="legend-item d-flex align-items-center mb-2">
+          <div class="legend-color" style="background-color: green;"></div>
+          <span class="ms-2">Zona verde</span>
+        </div>
+        -->
+      </div>
+
+      <div class="tab-pane fade" id="tab3">
         <h6>Elije la entidad</h6>
         <div id="entidadesDIV"></div>
 
         <div id="capitalesDIV"></div>
 
         <div id="botonReestablecer"></div>
-
-      </div>
-      <div class="tab-pane fade" id="tab2">
-        <p>Lista de cualquier cosa.</p>
-      </div>
-      <div class="tab-pane fade" id="tab3">
-        <p>Informacion de otra cosa</p>
       </div>
     </div>
   </div>
@@ -174,7 +228,7 @@
 
       <div id="bottomBar" class="bottom-bar">
         <div class="p-2 h-100 overflow-auto">
-          <p>Dale click sobre una imagen para mostrar informacion por corte temporal</p>
+          <p>Para mostrar capas elije un corte</p>
           <div class="d-flex flex-wrap gap-2 justify-content-center">
             <div id="cutsCards">
                 <div class="spinner-grow text-primary" role="status">
@@ -189,22 +243,7 @@
 
             </div>
           </div>
-          <!--
-          <div class="d-flex flex-wrap gap-2 justify-content-center">
-            <img src="./img/1725.png" class="gallery-img" alt="No se encontro la imagen"/>
-            <img src="./img/1817.png" class="gallery-img" alt="No se encontro la imagen"/>
-            <img src="./img/1854.png" class="gallery-img" alt="No se encontro la imagen"/>
-            <img src="./img/1894.png" class="gallery-img" alt="No se encontro la imagen"/>
-            <img src="./img/1947.png" class="gallery-img" alt="No se encontro la imagen"/>
-            <img src="./img/1964.png" class="gallery-img" alt="No se encontro la imagen"/>
-            <img src="./img/1982.png" class="gallery-img" alt="No se encontro la imagen"/>
-            <img src="./img/1993.png" class="gallery-img" alt="No se encontro la imagen"/>            
-            <img src="./img/2000.png" class="gallery-img" alt="No se encontro la imagen"/>
-            <img src="./img/2010.png" class="gallery-img" alt="No se encontro la imagen"/>
-            <img src="./img/2017.png" class="gallery-img" alt="No se encontro la imagen"/>            
-          </div>
-        </div>
-        -->
+
   <!-- Scripts -->
   <script>
 
@@ -228,9 +267,6 @@
     });
 
     L.control.layers({ 'OpenStreetMap': osm, 'Satélite Esri': esri }).addTo(map);
-
-    /*L.marker([19.2866, -99.6557]).addTo(map)
-      .bindPopup('¡Hola desde Toluca!').openPopup();*/
 
     // Toggle sidebar
     const toggleBtn = document.getElementById('toggleSidebar');
@@ -263,7 +299,7 @@
       }
     });
 
-// JS para controlar visibilidad
+// JS para controlar visibilidad del sidebar y del lowerbar
 const bottomBar = document.getElementById('bottomBar');
 const toggleBtn2 = document.getElementById('toggleBottomBar');
 
@@ -272,12 +308,229 @@ toggleBtn2.addEventListener('click', () => {
 });
 llenaCBXentidades();
 llenaCBXcapitales();
-loadCapitals();
+//loadCapitals();
+//control de capas
+// Objeto para guardar todas tus capas
+const capas = {};
 
+
+
+loadEntidad(15);
+loadCapital(15);
+
+
+
+
+function loadLayers(id_anio, cve_agee){
+  //Primero debemos apagar y prender todas las capas
+
+  borrarContenidoMapa();
+  loadManzanas(id_anio, cve_agee);
+  loadRios(cve_agee);
+  loadCL(cve_agee);
+  loadPL(id_anio, cve_agee);
+  loadVialidades(id_anio, cve_agee);
+  
+}
+
+function toggleLayer(id_layer) {
+	const layer = capas[id_layer];
+	if (layer && !map.hasLayer(layer)) {
+		map.addLayer(layer);
+	}else if (layer && map.hasLayer(layer)) {
+		map.removeLayer(layer);
+  }
+}
+
+async function loadRios(cve_agee){
+  const url = `http://${host}:${port}/spatyal/getRiosByEnt/${cve_agee}`;
+  //console.log(url);
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      let riosArr = await response.json();
+      riosGeoJSON=riosArr[0].geojson;
+      //console.log(riosArr[0].geojson);      
+
+      const riosLayer =L.geoJSON(riosArr[0].geojson, {
+        style: {
+          //color: 'red',         // Borde
+          fillColor: 'blue',  // Relleno
+          fillOpacity: 0.5,
+          weight: 2
+        }
+      });
+
+      capas["rios"] = riosLayer;
+      riosLayer.addTo(map); // Agrega al mapa
+      //console.log(capas);
+
+    }
+  } catch (error) {
+    console.error(error.message);
+  }  
+
+}
+
+
+
+async function loadCL(cve_agee){
+  const url = `http://${host}:${port}/spatyal/getCLbyEnt/${cve_agee}`;
+  //console.log(url);
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      let clArr = await response.json();
+      clGeoJSON=clArr[0].geojson;
+
+      const clLayer =L.geoJSON(clArr[0].geojson, {
+        style: {
+          color: '#c14a31',         // Borde
+          //fillColor: 'blue',  // Relleno
+          fillOpacity: 0.5,
+          weight: 2
+        }
+      });
+
+      capas["cl"] = clLayer;
+      clLayer.addTo(map); // Agrega al mapa
+      //console.log(capas);
+
+    }
+  } catch (error) {
+    console.error(error.message);
+  }  
+
+}
+
+
+
+async function loadPL(id_anio, cve_agee) {
+  const url = `http://${host}:${port}/spatyal/getPLbyEntAndCut/${cve_agee}/${id_anio}`;
+  //console.log(url);
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      //primero borramos lo que tiene el mapa actualmente
+      //borrarContenidoMapa();
+      let plJSON = await response.json();      
+      plJSON=plJSON[0].geojson;
+      //console.log(plJSON);      
+      //const capa = L.geoJSON(plJSON).addTo(map);
+      
+      const plLayer =L.geoJSON(plJSON, {
+        style: {
+          color: '#cd2743',         // Borde
+          //fillColor: 'blue',  // Relleno
+          fillOpacity: 0.0,
+          weight: 2
+        }
+      }).addTo(map);
+
+      capas["pl"] = plLayer;
+      //clLayer.addTo(map); // Agrega al mapa
+
+      //map.fitBounds(plLayer.getBounds());
+      
+    }
+  } catch (error) {
+    console.error(error.message);    
+  } 
+    
+}
+
+
+async function loadManzanas(id_anio, cve_agee) {
+  const url = `http://${host}:${port}/spatyal/GetManzanasByEntAndCut/${cve_agee}/${id_anio}`;
+  //console.log(url);
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      //primero borramos lo que tiene el mapa actualmente
+      //borrarContenidoMapa();
+      let manzanasJSON = await response.json();      
+      manzanasJSON=manzanasJSON[0].geojson;
+
+      const manzanasLayer =L.geoJSON(manzanasJSON, {
+        style: {
+          color: '#f1e9b7',         // Borde
+          fillColor: '#f1e9b7',  // Relleno
+          fillOpacity: 0.5,
+          weight: 2
+        }
+      }).addTo(map);
+
+      capas["manzanas"] = manzanasLayer;
+      map.fitBounds(manzanasLayer.getBounds());
+      
+    }
+  } catch (error) {
+    console.error(error.message);    
+  } 
+    
+}
+
+
+async function loadVialidades(id_anio, cve_agee) {
+  const url = `http://${host}:${port}/spatyal/GetVialidadesByEntAndCut/${cve_agee}/${id_anio}`;
+  //console.log(url);
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      //primero borramos lo que tiene el mapa actualmente
+      //borrarContenidoMapa();
+      let vialidadesJSON = await response.json();      
+      vialidadesJSON=vialidadesJSON[0].geojson;
+      //console.log(plJSON);      
+      //const capa = L.geoJSON(manzanasJSON).addTo(map);
+
+
+      const vialidadesLayer =L.geoJSON(vialidadesJSON, {
+        style: {
+          color: '#69685f',         // Borde
+          fillColor: '#69685f',  // Relleno
+          fillOpacity: 0.5,
+          weight: 5
+        }
+      }).addTo(map);
+
+      capas["vialidades"] = vialidadesLayer;
+
+
+
+
+
+
+      //map.fitBounds(capa.getBounds());
+      
+    }
+  } catch (error) {
+    console.error(error.message);    
+  } 
+    
+}
 
 async function loadCapitals(){
 
-  const url = `http://localhost:4000/spatyal/getCapitales`;
+  const url = `http://${host}:${port}/spatyal/getCapitales`;
   //console.log(url);
   try {
     const response = await fetch(url);
@@ -302,9 +555,9 @@ async function loadCapitals(){
 
 
 
-async function loadCuts(cve_agee){
+async function loadCardsCuts(cve_agee){
 
-  const url = `http://localhost:4000/construcciones/cortes/${cve_agee}`;
+  const url = `http://${host}:${port}/construcciones/getCortesByAGEE/${cve_agee}`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -324,9 +577,9 @@ async function loadCuts(cve_agee){
                 '<div class="col">'+
                   '<div class="card">'+
                     '<div class="card-body">'+
-                      '<h5 class="card-title">'+element.cortes+'</h5>'+
-                      '<p class="card-text">Click para cargar las capas del año '+element.cortes+'</p>'+
-                      '<a href="#" class="btn btn-primary">Cargar capas</a>'+                      
+                      '<h5 class="card-title">'+element.anio+'</h5>'+
+                      '<p class="card-text">Click para cargar las capas del año '+element.anio+'</p>'+
+                      '<a onclick="loadLayers('+element.id_anio+', '+cve_agee+')" class="btn btn-primary">Cargar capas</a>'+                      
                     '</div>'+
                   '</div>'+
                 '</div>'          
@@ -356,7 +609,7 @@ async function loadCuts(cve_agee){
 
 
 async function llenaCBXentidades() {
-  const url = "http://localhost:4000/spatyal/getNombresEntidades";
+  const url = `http://${host}:${port}/spatyal/getNombresEntidades`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -390,7 +643,7 @@ async function llenaCBXcapitales(){
   //const cve_agee=document.getElementById("entidadesCBX").value;
 
 
-  const url = `http://localhost:4000/spatyal/getCapitales`;
+  const url = `http://${host}:${port}/spatyal/getCapitales`;
   //console.log(url);
   
   try {
@@ -424,7 +677,7 @@ async function llenaCBXcapitales(){
 
 
 async function loadCapital(cve_agee) {
-  const url = `http://localhost:4000/spatyal/getCapital/${cve_agee}`;
+  const url = `http://${host}:${port}/spatyal/getCapital/${cve_agee}`;
   //console.log(url);
   
   try {
@@ -458,7 +711,7 @@ async function loadCapital(cve_agee) {
 
 async function loadEntidad(cve_agee) {
   
-  const url = `http://localhost:4000/spatyal/getEntidadPolygon/${cve_agee}`;
+  const url = `http://${host}:${port}/spatyal/getEntidadPolygon/${cve_agee}`;
   //console.log(url);
   
   try {
@@ -470,14 +723,12 @@ async function loadEntidad(cve_agee) {
       //primero borramos lo que tiene el mapa actualmente
       //borrarContenidoMapa();
       let entidadJSON = await response.json();
-      entidadJSON=entidadJSON[0].geojson.features[0];
-      //console.log(entidadJSON.geometry.coordinates[0]);
-      //console.log(entidadJSON);      
+      entidadJSON=entidadJSON[0].geojson.features[0];     
       const capa = L.geoJSON(entidadJSON).addTo(map);
       map.fitBounds(capa.getBounds());
       //mostramos la barra inferior
       document.getElementById('bottomBar').classList.add('show');
-      loadCuts(cve_agee);
+      loadCardsCuts(cve_agee);
     }
   } catch (error) {
     console.error(error.message);    
