@@ -134,6 +134,7 @@
   <nav class="navbar navbar-dark bg-primary fixed-top">
     <div class="container-fluid">
       <button id="toggleSidebar" class="btn btn-outline-light btn-sm me-2">☰</button>
+      <div id="corte"></div>      
       <a class="navbar-brand" href="#">INEGI</a>
     </div>
   </nav>
@@ -166,6 +167,9 @@
           <div class="legend-color" style="background-color: #69685f;"></div>
           <span class="ms-2">Vialidades</span>
         </div>
+
+
+
 
 
       </div>
@@ -257,6 +261,10 @@
     // Añadir el control de zoom en la esquina inferior derecha
     L.control.zoom({ position: 'bottomright' }).addTo(map);
  
+    // Capa base vacía (fondo blanco)
+    const blanco = L.tileLayer('', {
+      attribution: ''
+    }).addTo(map);
 
     const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap'
@@ -266,7 +274,13 @@
       attribution: 'Tiles &copy; Esri'
     });
 
-    L.control.layers({ 'OpenStreetMap': osm, 'Satélite Esri': esri }).addTo(map);
+    
+    // Establecer fondo blanco mediante estilo directo
+    document.getElementById('map').style.backgroundColor = 'white';    
+    
+    //Agregamos las capas base
+    L.control.layers({ 'Fondo blanco': blanco, 'OpenStreetMap': osm, 'Satélite Esri': esri }).addTo(map);
+
 
     // Toggle sidebar
     const toggleBtn = document.getElementById('toggleSidebar');
@@ -307,7 +321,7 @@ toggleBtn2.addEventListener('click', () => {
   bottomBar.classList.toggle('show');
 });
 llenaCBXentidades();
-llenaCBXcapitales();
+//llenaCBXcapitales();
 //loadCapitals();
 //control de capas
 // Objeto para guardar todas tus capas
@@ -317,6 +331,177 @@ const capas = {};
 
 loadEntidad(15);
 loadCapital(15);
+
+
+  function obtenerIcono(id_concepto) {
+    let iconoUrl;
+
+    switch (id_concepto) {
+      case 1: //alameda
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4591/4591794.png';        
+        break;
+      case 2://archivo
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/6100/6100580.png';
+        break;
+      case 3://biblioteca
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3068/3068327.png';
+        break;
+      case 4:// iglesia
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/615/615955.png';
+        break;
+      case 5://carcel
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/1022/1022331.png';
+        break;
+      case 6:// casa de diligencias
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/8741/8741291.png';
+        break;
+      case 7: //cementerio
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/5880/5880107.png';
+        break;
+      case 8: //terminal de autobuses
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/11649/11649243.png';
+        break;
+      case 9:// bomberos
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/864/864564.png';
+        break;
+      case 10:// centro de cultura
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/10987/10987278.png';
+        break;
+      case 11: //cine
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/10351/10351880.png';
+        break;  
+      case 12://comercio
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/7314/7314483.png';
+        break;
+      case 13://convento
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/9836/9836113.png';
+        break;
+      case 14://Escuela
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/167/167707.png';
+        break;
+      case 15://estacion de ferrocarril
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/15862/15862868.png';
+        break;
+      case 16://estadio
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/919/919380.png';
+        break;
+      case 17://guarderia
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4506/4506230.png';
+        break;
+      case 18://Hospital
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/2309/2309962.png';
+        break;
+      case 19://hotel
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3009/3009489.png';
+        break;
+      case 20://industria alimentaria
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3690/3690289.png';
+        break; 
+      case 21://industria del cuero
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/14849/14849780.png';
+        break;                                                                                
+      case 22://industria del tabaco
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/8997/8997260.png';
+        break;
+      case 23://industria editorial
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/13516/13516733.png';
+        break;
+      case 24://industria quimica
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/11873/11873377.png';
+        break;
+      case 25://industria textil
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/8604/8604604.png';
+        break;
+      case 26://industria de las bebidas
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/8604/8604608.png';
+        break;
+      case 27://lavaderos publicos
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/7212/7212512.png';
+        break;
+      case 28://maquinaria y equipo
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/16355/16355663.png';
+        break;
+      case 29://mercado
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/17024/17024174.png';
+        break;
+      case 30://Monte de piedad
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/16057/16057747.png';
+        break;
+      case 31:// Monumento
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/25/25889.png';
+        break;
+      case 32://Museo
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3936/3936816.png';
+        break;
+      case 33://oficina de correo
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/831/831499.png';
+        break;
+      case 34://oficina telegrafica
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3020/3020787.png';
+        break;
+      case 35://palacio municipal
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/9417/9417537.png';
+        break;
+      case 36://palacio de gobierno
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/9418/9418169.png';
+        break;
+      case 37://palacio de justicia
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/16484/16484256.png';
+        break;
+      case 38://palacio municipal
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/5309/5309265.png';
+        break;
+      case 39://plaza
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4506/4506403.png';
+        break;
+      case 40://portal
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4324/4324013.png';
+        break;
+      case 41://rastro
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/15833/15833082.png';
+        break;
+      case 42://sala de concierto
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/10061/10061682.png';
+        break;
+      case 43://seminario
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/1526/1526970.png';
+        break;
+      case 44://sitio de interes
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3967/3967155.png';
+        break;
+      case 45://teatro
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/2787/2787884.png';
+        break;
+      case 46://templo
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4050/4050101.png';
+        break;
+      case 47://tribunal de menores
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/5493/5493436.png';
+        break;
+      case 48://unidad de urgencias
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3974/3974881.png';
+        break;        
+      case 49://unidad deportiva
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4163/4163684.png';
+        break;
+      case 50://unidad medica
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/8519/8519905.png';
+        break;
+      case 51://zona industrial
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/1037/1037503.png';
+        break;                        
+      default:
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/11316/11316431.png';
+    }
+
+    return L.icon({
+      iconUrl: iconoUrl,
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+  }
+
 
 
 
@@ -330,8 +515,127 @@ function loadLayers(id_anio, cve_agee){
   loadCL(cve_agee);
   loadPL(id_anio, cve_agee);
   loadVialidades(id_anio, cve_agee);
-  
+  loadRasgos(id_anio, cve_agee);
+
+  switch (id_anio) {
+    case 1:
+      anio=1725;
+      break;
+    case 2:
+      anio=1817;
+      break;
+    case 3:
+      anio=1854;
+      break;
+    case 4:
+      anio=1894;
+      break;
+    case 5:
+      anio=1947;
+      break;
+    case 6:
+      anio=1964;
+      break;
+    case 7:
+      anio=1982;
+      break;
+    case 8:
+      anio=1993;
+      break;
+    case 9:
+      anio=2000;
+      break;
+    case 10:
+      anio=2007;
+      break;
+    case 11:
+      anio=2010;
+      break;
+    case 12:
+      anio=2018;
+      break;                                    
+    default:
+      anio="Error";
+      break;
+  }
+    //loadSimbologiaRasgos(id_anio, cve_agee);
+
+
+
+
+
+  document.getElementById("corte").innerHTML=`<a class="navbar-brand">${anio}</a>`;
 }
+
+
+async function loadRasgos(id_anio, id_capital){
+  const url = `http://${host}:${port}/spatyal/getConceptosCutAndEnt/${id_capital}/${id_anio}`;
+  //console.log(url);
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      let conceptosArr = await response.json();
+      conceptosArr=conceptosArr.Respuesta;
+      //console.log(conceptosArr);
+      conceptosArr.forEach(concepto=>{ //ahora vamos a lanzar una peticion http por cada concepto
+        loadGeoJSONbyConceptoAndCut(concepto.id_concepto, concepto.nom_concepto, id_anio, id_capital);
+      })
+
+console.log(capas);
+
+    }
+  } catch (error) {
+    console.error(error.message);
+  } 
+
+}
+
+
+
+async function loadGeoJSONbyConceptoAndCut(id_concepto, nom_concepto, id_anio, id_capital){
+  const url = `http://${host}:${port}/spatyal/GetRasgosByEntAndCut/${id_capital}/${id_anio}/${id_concepto}`;
+  //console.log(url);
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      let rasgosArr = await response.json();
+      rasgosGeoJSON=rasgosArr[0].geojson;
+      //console.log(rasgosGeoJSON);
+      
+      
+    // Cargar datos en el mapa
+    const rasgosLayer=L.geoJSON(rasgosGeoJSON, {
+      pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, {
+          icon: obtenerIcono(feature.properties.id_concepto)
+        });
+      },
+      onEachFeature: function (feature, layer) {
+        layer.bindPopup(`
+        <strong>${feature.properties.nom_rasgo}</strong>
+        <br>${feature.properties.direccion}<br>
+        <br>${feature.properties.nom_concepto}<br>
+        <a href="url">Acontecimientos</a>
+        <a href="url">Editar</a>`      
+      );
+      }
+
+    }).addTo(map);
+      capas[nom_concepto] = rasgosLayer;
+      //console.log(capas)      
+    }
+  } catch (error) {
+    console.error(error.message);
+  }  
+
+}
+
 
 function toggleLayer(id_layer) {
 	const layer = capas[id_layer];
@@ -341,6 +645,7 @@ function toggleLayer(id_layer) {
 		map.removeLayer(layer);
   }
 }
+
 
 async function loadRios(cve_agee){
   const url = `http://${host}:${port}/spatyal/getRiosByEnt/${cve_agee}`;
