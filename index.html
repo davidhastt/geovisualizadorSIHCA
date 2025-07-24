@@ -123,6 +123,13 @@
       border: 1px solid #000;
       border-radius: 2px;
     }
+    /*formato para los iconos de los rasgos */
+    .legend-icon {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
 
   </style>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -140,67 +147,37 @@
   </nav>
 
   <!-- Sidebar superpuesta -->
-  <div id="sidebar" class="sidebar">
-    <h5>Simbología</h5>
+  <div id="sidebar" class="sidebar">    
     <ul class="nav nav-tabs" id="sidebarTabs" role="tablist">
-      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">Principal</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2">Base</button></li>
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">Capas</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2">Historia</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab3">Buscar</button></li>
     </ul>
     <div class="tab-content mt-3">
       <div class="tab-pane fade show active" id="tab1">
-        <div class="legend-item d-flex align-items-center mb-2">
-          <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('pl')">
-          <div class="legend-color" style="background-color: #cd2743;"></div>
-          <span class="ms-2">Poligono de localidad</span>
+        
+
+        
+
+        <div id="simbologiaBase">
+          <img src="./img/logo.png" class="rounded mx-auto d-block" width="100px" alt="No se encontro la imagen">
+          <br>
+          <h6>Bienvenido</h6>
+          <p>Para empezar elije un año para mostrar las capas</p>
+          <button type="button" class="btn btn-primary">Ver años disponibles</button>
         </div>
 
-        <div class="legend-item d-flex align-items-center mb-2">
-          <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('manzanas')">
-          <div class="legend-color" style="background-color: #f4ea0c;"></div>
-          <span class="ms-2">Manzanas</span>
-        </div>
-
-
-        <div class="legend-item d-flex align-items-center mb-2">
-          <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('vialidades')">
-          <div class="legend-color" style="background-color: #69685f;"></div>
-          <span class="ms-2">Vialidades</span>
-        </div>
-
-
-
+        <div id="simbologiaRasgos"></div>
 
 
       </div>
 
       <div class="tab-pane fade" id="tab2">
-<!-- Dentro del tab "Capas" -->
-<div id="leyenda" class="mt-2">
-  <h6>🗂️ Simbología</h6>
-
-  <div class="legend-item d-flex align-items-center mb-2">
-    <input type="checkbox" checked class="form-check-input me-2" onchange="toggleLayer('rios')">
-    <div class="legend-color" style="background-color: blue;"></div>
-    <span class="ms-2">Rios</span>
-  </div>
-
-  
-  <div class="legend-item d-flex align-items-center mb-2">
-    <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('cl')">
-    <div class="legend-color" style="background-color: #c14a31;"></div>
-    <span class="ms-2">Cotas</span>
-  </div>
-  
-
-</div>
-
-        <!--
-        <div class="legend-item d-flex align-items-center mb-2">
-          <div class="legend-color" style="background-color: green;"></div>
-          <span class="ms-2">Zona verde</span>
+        
+        <!--<div id="leyenda" class="mt-2">-->
+                 
         </div>
-        -->
+
       </div>
 
       <div class="tab-pane fade" id="tab3">
@@ -332,9 +309,174 @@ const capas = {};
 loadEntidad(15);
 loadCapital(15);
 
+  function obtenerURLicono(id_concepto) {
+    let iconoUrl="";
+
+    switch (id_concepto) {
+      case 1: //alameda
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4591/4591794.png';        
+        break;
+      case 2://archivo
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/6100/6100580.png';
+        break;
+      case 3://biblioteca
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3068/3068327.png';
+        break;
+      case 4:// iglesia
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/615/615955.png';
+        break;
+      case 5://carcel
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/1022/1022331.png';
+        break;
+      case 6:// casa de diligencias
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/8741/8741291.png';
+        break;
+      case 7: //cementerio
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/5880/5880107.png';
+        break;
+      case 8: //terminal de autobuses
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/11649/11649243.png';
+        break;
+      case 9:// bomberos
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/864/864564.png';
+        break;
+      case 10:// centro de cultura
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/10987/10987278.png';
+        break;
+      case 11: //cine
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/10351/10351880.png';
+        break;  
+      case 12://comercio
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/7314/7314483.png';
+        break;
+      case 13://convento
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/9836/9836113.png';
+        break;
+      case 14://Escuela
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/167/167707.png';
+        break;
+      case 15://estacion de ferrocarril
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/15862/15862868.png';
+        break;
+      case 16://estadio
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/919/919380.png';
+        break;
+      case 17://guarderia
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4506/4506230.png';
+        break;
+      case 18://Hospital
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/2309/2309962.png';
+        break;
+      case 19://hotel
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3009/3009489.png';
+        break;
+      case 20://industria alimentaria
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3690/3690289.png';
+        break; 
+      case 21://industria del cuero
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/14849/14849780.png';
+        break;                                                                                
+      case 22://industria del tabaco
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/8997/8997260.png';
+        break;
+      case 23://industria editorial
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/13516/13516733.png';
+        break;
+      case 24://industria quimica
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/11873/11873377.png';
+        break;
+      case 25://industria textil
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/8604/8604604.png';
+        break;
+      case 26://industria de las bebidas
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/8604/8604608.png';
+        break;
+      case 27://lavaderos publicos
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/7212/7212512.png';
+        break;
+      case 28://maquinaria y equipo
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/16355/16355663.png';
+        break;
+      case 29://mercado
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/17024/17024174.png';
+        break;
+      case 30://Monte de piedad
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/16057/16057747.png';
+        break;
+      case 31:// Monumento
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/25/25889.png';
+        break;
+      case 32://Museo
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3936/3936816.png';
+        break;
+      case 33://oficina de correo
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/831/831499.png';
+        break;
+      case 34://oficina telegrafica
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3020/3020787.png';
+        break;
+      case 35://palacio municipal
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/9417/9417537.png';
+        break;
+      case 36://palacio de gobierno
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/9418/9418169.png';
+        break;
+      case 37://palacio de justicia
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/16484/16484256.png';
+        break;
+      case 38://palacio municipal
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/5309/5309265.png';
+        break;
+      case 39://plaza
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4506/4506403.png';
+        break;
+      case 40://portal
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4324/4324013.png';
+        break;
+      case 41://rastro
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/15833/15833082.png';
+        break;
+      case 42://sala de concierto
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/10061/10061682.png';
+        break;
+      case 43://seminario
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/1526/1526970.png';
+        break;
+      case 44://sitio de interes
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3967/3967155.png';
+        break;
+      case 45://teatro
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/2787/2787884.png';
+        break;
+      case 46://templo
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4050/4050101.png';
+        break;
+      case 47://tribunal de menores
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/5493/5493436.png';
+        break;
+      case 48://unidad de urgencias
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/3974/3974881.png';
+        break;        
+      case 49://unidad deportiva
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/4163/4163684.png';
+        break;
+      case 50://unidad medica
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/8519/8519905.png';
+        break;
+      case 51://zona industrial
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/1037/1037503.png';
+        break;                        
+      default:
+        iconoUrl = 'https://cdn-icons-png.flaticon.com/128/11316/11316431.png';
+    }
+
+    return iconoUrl;
+  }
+
+
 
   function obtenerIcono(id_concepto) {
-    let iconoUrl;
+    let iconoUrl="";
 
     switch (id_concepto) {
       case 1: //alameda
@@ -502,13 +644,52 @@ loadCapital(15);
     });
   }
 
+function loadSimbologiaBase(){
+
+//primero limpiaños
+document.getElementById('simbologiaBase').innerHTML="";
+document.getElementById('simbologiaBase').innerHTML=`
+        <h6>🗂️ Simbología</h6>
+
+        <div class="legend-item d-flex align-items-center mb-2">
+          <input type="checkbox" checked class="form-check-input me-2" onchange="toggleLayer('rios')">
+          <div class="legend-color" style="background-color: blue;"></div>
+          <span class="ms-2">Rios</span>
+        </div>
+        
+        <div class="legend-item d-flex align-items-center mb-2">
+          <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('cl')">
+          <div class="legend-color" style="background-color: #c14a31;"></div>
+          <span class="ms-2">Cotas</span>
+        </div>         
+
+
+        <div class="legend-item d-flex align-items-center mb-2">
+          <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('pl')">
+          <div class="legend-color" style="background-color: #cd2743;"></div>
+          <span class="ms-2">Poligono de localidad</span>
+        </div>
+
+        <div class="legend-item d-flex align-items-center mb-2">
+          <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('manzanas')">
+          <div class="legend-color" style="background-color: #f4ea0c;"></div>
+          <span class="ms-2">Manzanas</span>
+        </div>
+
+
+        <div class="legend-item d-flex align-items-center mb-2">
+          <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('vialidades')">
+          <div class="legend-color" style="background-color: #69685f;"></div>
+          <span class="ms-2">Vialidades</span>
+        </div>
+`;
+}
 
 
 
 
-function loadLayers(id_anio, cve_agee){
-  //Primero debemos apagar y prender todas las capas
 
+function loadLayers(id_anio, cve_agee){  
   borrarContenidoMapa();
   loadManzanas(id_anio, cve_agee);
   loadRios(cve_agee);
@@ -516,6 +697,7 @@ function loadLayers(id_anio, cve_agee){
   loadPL(id_anio, cve_agee);
   loadVialidades(id_anio, cve_agee);
   loadRasgos(id_anio, cve_agee);
+  loadSimbologiaBase();
 
   switch (id_anio) {
     case 1:
@@ -558,14 +740,25 @@ function loadLayers(id_anio, cve_agee){
       anio="Error";
       break;
   }
-    //loadSimbologiaRasgos(id_anio, cve_agee);
-
-
-
-
-
+    
   document.getElementById("corte").innerHTML=`<a class="navbar-brand">${anio}</a>`;
 }
+
+function agregarSimbologiaXconcepto(id_concepto, nom_cocepto) {
+    const leyenda = document.getElementById('simbologiaRasgos');
+    const item = document.createElement('div');
+    //item.className = 'legend-item d-flex align-items-center mb-2';
+    const iconURL=obtenerURLicono(id_concepto);
+    item.innerHTML = `
+          <div class="legend-item d-flex align-items-center mb-2">
+            <input type="checkbox" class="form-check-input me-2" checked onchange="toggleLayer('${nom_cocepto}')">
+            <img src="${iconURL}" alt="No se encontro" class="legend-icon">
+            <span class="ms-2">${nom_cocepto}</span>
+          </div>
+    `;
+    leyenda.appendChild(item);
+}
+
 
 
 async function loadRasgos(id_anio, id_capital){
@@ -580,11 +773,15 @@ async function loadRasgos(id_anio, id_capital){
       let conceptosArr = await response.json();
       conceptosArr=conceptosArr.Respuesta;
       //console.log(conceptosArr);
+      //primero borramos la simbologia
+      document.getElementById("simbologiaRasgos").innerHTML="";
       conceptosArr.forEach(concepto=>{ //ahora vamos a lanzar una peticion http por cada concepto
         loadGeoJSONbyConceptoAndCut(concepto.id_concepto, concepto.nom_concepto, id_anio, id_capital);
+        //Ahora tenemos que agregar su simbologia respectiva
+        agregarSimbologiaXconcepto(concepto.id_concepto, concepto.nom_concepto);
       })
 
-console.log(capas);
+
 
     }
   } catch (error) {
@@ -804,9 +1001,6 @@ async function loadVialidades(id_anio, cve_agee) {
       //borrarContenidoMapa();
       let vialidadesJSON = await response.json();      
       vialidadesJSON=vialidadesJSON[0].geojson;
-      //console.log(plJSON);      
-      //const capa = L.geoJSON(manzanasJSON).addTo(map);
-
 
       const vialidadesLayer =L.geoJSON(vialidadesJSON, {
         style: {
@@ -818,13 +1012,6 @@ async function loadVialidades(id_anio, cve_agee) {
       }).addTo(map);
 
       capas["vialidades"] = vialidadesLayer;
-
-
-
-
-
-
-      //map.fitBounds(capa.getBounds());
       
     }
   } catch (error) {
@@ -860,7 +1047,7 @@ async function loadCapitals(){
 
 
 
-async function loadCardsCuts(cve_agee){
+async function loadCardsCuts(cve_agee){ //creo que ya no se usa esta funcion
 
   const url = `http://${host}:${port}/construcciones/getCortesByAGEE/${cve_agee}`;
   try {
