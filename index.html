@@ -147,49 +147,47 @@
   </nav>
 
   <!-- Sidebar superpuesta -->
-  <div id="sidebar" class="sidebar">    
-    <ul class="nav nav-tabs" id="sidebarTabs" role="tablist">
-      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">Capas</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2">Historia</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab3">Buscar</button></li>
-    </ul>
-    <div class="tab-content mt-3">
-      <div class="tab-pane fade show active" id="tab1">
-        
+  <div id="sidebar" class="sidebar">             
+      <ul class="nav nav-tabs" id="sidebarTabs" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" href="#tab1">Capas</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" href="#tab2">Historia</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" href="#tab3">Buscar</button></li>
+      </ul>
 
-        
 
-        <div id="simbologiaBase">
+      <div class="tab-content mt-3">
+        <div class="tab-pane fade show active" id="tab1"> 
+
+          <div id="simbologiaBase">
           <img src="./img/logo.png" class="rounded mx-auto d-block" width="100px" alt="No se encontro la imagen">
           <br>
           <h6>Bienvenido</h6>
           <p>Para empezar elije un año para mostrar las capas</p>
-          <button type="button" class="btn btn-primary">Ver años disponibles</button>
+          <button type="button" class="btn btn-primary" onclick="document.getElementById('bottomBar').classList.add('show');">Ver años disponibles</button>
+          </div>
+
+          <div id="simbologiaRasgos"></div>
+
         </div>
 
-        <div id="simbologiaRasgos"></div>
+        <div class="tab-pane fade" id="tab2"> 
+          <div id="nom_rasgo"></div>
+          <div id="acontecimientos"></div>
 
-
-      </div>
-
-      <div class="tab-pane fade" id="tab2">
-        
-        <!--<div id="leyenda" class="mt-2">-->
-                 
         </div>
 
-      </div>
+        <div class="tab-pane fade" id="tab3"> 
+          <h6>Elije la entidad</h6>
+          <div id="entidadesDIV"></div>
 
-      <div class="tab-pane fade" id="tab3">
-        <h6>Elije la entidad</h6>
-        <div id="entidadesDIV"></div>
+          <div id="capitalesDIV"></div>
 
-        <div id="capitalesDIV"></div>
-
-        <div id="botonReestablecer"></div>
-      </div>
-    </div>
+          <div id="botonReestablecer"></div>
+        </div>
+      </div> 
   </div>
+    
+
 
   <!-- Mapa -->
   <div id="map"></div>
@@ -207,24 +205,25 @@
 
   <!-- Barra inferior oculta inicialmente -->
 
-      <div id="bottomBar" class="bottom-bar">
-        <div class="p-2 h-100 overflow-auto">
-          <p>Para mostrar capas elije un corte</p>
-          <div class="d-flex flex-wrap gap-2 justify-content-center">
-            <div id="cutsCards">
-                <div class="spinner-grow text-primary" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>              
-                <div class="spinner-grow text-primary" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div> 
-                <div class="spinner-grow text-primary" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>  
-
-            </div>
-          </div>
-
+<div id="bottomBar" class="bottom-bar">
+  <div class="p-2 h-100 overflow-auto">
+    <p>Para mostrar capas elije un corte</p>
+    <div class="d-flex flex-wrap gap-2 justify-content-center">
+      <div id="cutsCards">
+        <div class="spinner-grow text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="spinner-grow text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div> 
+        <div class="spinner-grow text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>  
+      </div>
+    </div>
+  </div>
+</div>
+</body>
   <!-- Scripts -->
   <script>
 
@@ -260,14 +259,25 @@
 
 
     // Toggle sidebar
-    const toggleBtn = document.getElementById('toggleSidebar');
+    const toggleBtnSB = document.getElementById('toggleSidebar');
     const sidebar = document.getElementById('sidebar');
 
-    toggleBtn.addEventListener('click', () => {
+    toggleBtnSB.addEventListener('click', () => {
       sidebar.classList.toggle('show');
     });
 
+    //document.getElementById('sidebar').classList.add('show'); 
 
+    // JS para controlar visibilidad del sidebar 
+    const bottomBar = document.getElementById('bottomBar');
+    const toggleBtn2 = document.getElementById('toggleBottomBar');
+
+    toggleBtn2.addEventListener('click', () => {  
+      bottomBar.classList.toggle('show');
+    });
+
+    //document.getElementById('bottomBar').classList.add('show'); 
+    
 
     // Función para ubicar al usuario
     document.getElementById('locate-btn').addEventListener('click', function (e) {
@@ -290,13 +300,7 @@
       }
     });
 
-// JS para controlar visibilidad del sidebar y del lowerbar
-const bottomBar = document.getElementById('bottomBar');
-const toggleBtn2 = document.getElementById('toggleBottomBar');
 
-toggleBtn2.addEventListener('click', () => {  
-  bottomBar.classList.toggle('show');
-});
 llenaCBXentidades();
 //llenaCBXcapitales();
 //loadCapitals();
@@ -309,7 +313,95 @@ const capas = {};
 loadEntidad(15);
 loadCapital(15);
 
-  function obtenerURLicono(id_concepto) {
+async function showAcontecimientos(rasgo){
+const url = `http://${host}:${port}/spatyal/getAcontecimientosByRasgo/${rasgo.id_rasgo}`;
+  //console.log(url);  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+      console.log("Error");
+    }else{
+      //Primero cambiamos el titulo
+      document.getElementById("nom_rasgo").innerHTML=
+              `
+              <h5 class="card-title">${rasgo.nom_rasgo}</h5>
+              <h6 class="card-subtitle mb-2 text-body-secondary">${rasgo.nom_concepto}</h6>
+              `;
+
+      //console.log(rasgo);
+
+      let acontecimientos = await response.json()
+      let acontsArr= acontecimientos.Respuesta;
+      htmlAconts="";
+      acontsArr.forEach(acontecimiento => {
+      //const fechaCompleta = "1989-11-17T06:00:00.000Z";
+      acontecimiento.fecha = new Date(acontecimiento.fecha).toISOString().split('T')[0];
+      
+      //let fecha=acontecimiento.fecha;
+      fecha = new Date(acontecimiento.fecha);
+      const dia = fecha.getDate();
+      const mes = fecha.getMonth() + 1; 
+      const anio = fecha.getFullYear();
+      acontecimiento.fecha=`${dia}/${mes}/${anio}`
+
+      htmlAconts+=
+      `
+        <div class="card" style="width: 16rem;">
+          <div class="card-body">
+            <h5 class="card-title">${acontecimiento.fecha}</h5>              
+            <p class="card-text">${acontecimiento.acontecimiento}</p>
+          </div>
+        </div>        
+      `;
+    });
+    document.getElementById("acontecimientos").innerHTML=htmlAconts;
+      
+
+
+
+
+    }
+  } catch (error) {
+    console.error(error.message);    
+  } 
+
+
+}
+
+
+function showTab(id_tab, rasgo){
+  //Primero abrimos el panel lateral
+  document.getElementById('sidebar').classList.add('show'); 
+  //Declaracion de constante para mostrar y ocultar el tab2
+
+  if (id_tab==2){// mostrar acontecmiento
+    const tab = new bootstrap.Tab(document.querySelector('[href="#tab2"]'));  
+    tab.show();
+    
+    showAcontecimientos(rasgo);
+
+
+
+
+
+
+
+
+   }else{
+    const tab = new bootstrap.Tab(document.querySelector('[href="#tab1"]'));  
+    tab.show();
+   }
+   
+   
+
+}
+
+
+
+
+
+function obtenerURLicono(id_concepto) {
     let iconoUrl="";
 
     switch (id_concepto) {
@@ -690,6 +782,8 @@ document.getElementById('simbologiaBase').innerHTML=`
 
 
 function loadLayers(id_anio, cve_agee){  
+  document.getElementById('sidebar').classList.add('show');
+  showTab(1, {});
   borrarContenidoMapa();
   loadManzanas(id_anio, cve_agee);
   loadRios(cve_agee);
@@ -791,7 +885,6 @@ async function loadRasgos(id_anio, id_capital){
 }
 
 
-
 async function loadGeoJSONbyConceptoAndCut(id_concepto, nom_concepto, id_anio, id_capital){
   const url = `http://${host}:${port}/spatyal/GetRasgosByEntAndCut/${id_capital}/${id_anio}/${id_concepto}`;
   //console.log(url);
@@ -818,10 +911,13 @@ async function loadGeoJSONbyConceptoAndCut(id_concepto, nom_concepto, id_anio, i
         <strong>${feature.properties.nom_rasgo}</strong>
         <br>${feature.properties.direccion}<br>
         <br>${feature.properties.nom_concepto}<br>
-        <a href="url">Acontecimientos</a>
-        <a href="url">Editar</a>`      
+        <a href="#" onclick="showTab(2, {'id_rasgo': ${feature.properties.id_rasgo},   'nom_rasgo': '${feature.properties.nom_rasgo}',   'direccion': '${feature.properties.direccion}',  'nom_concepto': '${feature.properties.nom_concepto}'})" >Acontecimientos</a>
+        <a href="">Editar</a>`      
       );
       }
+
+
+
 
     }).addTo(map);
       capas[nom_concepto] = rasgosLayer;
