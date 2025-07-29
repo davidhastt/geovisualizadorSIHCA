@@ -289,6 +289,35 @@ conceptos.id_concepto=3 AND rasgos.id_capital=15 AND nombres_rasgos.id_anio = 1 
 
 
 
+Esto te quedaste haciendo el 29 de julio de 2025 (frontend)
+
+actualizar acontecimiento 2 ok ok
+insertar acontecimiento 2 ok muestra el modal con los camopos falta que inserte
+insertar rasgo 5 OK
+obtener años 2 ok
+
+
+
+
+insertar un rasgo ok
+	id_persona como obtner este dato? desde el localstorage
+	id_tema
+	id_sumbtema
+	id_concepto
+	id_capital
+
+nombres_rasgos OK
+	id_rasgo, se debe obtener despues de insetar en la tabla rasgo
+	nombre
+	id_anio crear api para obtner años disponibles ok
+direcciones OK
+	id_rasgo
+	direccion
+	geom
+	id_anio
+
+
+
 
 
 

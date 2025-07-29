@@ -296,6 +296,12 @@ Todas las obras de equipamiento que se han edificado en la ciudad, la convierten
       </div>
       <div class="modal-body" id="modalic">
 
+        <div class="spinner-grow text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="spinner-grow text-secondary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
 
 
       </div>
@@ -417,39 +423,49 @@ const url = `http://${host}:${port}/spatyal/getAcontecimientosByRasgo/${rasgo.id
       let acontsArr= acontecimientos.Respuesta;
       htmlAconts="";
       acontsArr.forEach(acontecimiento => {
-      //const fechaCompleta = "1989-11-17T06:00:00.000Z";
-      acontecimiento.fecha = new Date(acontecimiento.fecha).toISOString().split('T')[0];
-      
-      //let fecha=acontecimiento.fecha;
-      fecha = new Date(acontecimiento.fecha);
-      const dia = fecha.getDate();
-      const mes = fecha.getMonth() + 1; 
-      const anio = fecha.getFullYear();
-      acontecimiento.fecha=`${dia}/${mes}/${anio}`
+          //const fechaCompleta = "1989-11-17T06:00:00.000Z";
+          acontecimiento.fecha = new Date(acontecimiento.fecha).toISOString().split('T')[0];
+          
+          //let fecha=acontecimiento.fecha;
+          fecha = new Date(acontecimiento.fecha);
+          const dia = fecha.getDate();
+          const mes = fecha.getMonth() + 1; 
+          const anio = fecha.getFullYear();
+          acontecimiento.fecha=`${dia}/${mes}/${anio}`
 
-      htmlAconts+=
-      `
-        <div class="card" style="width: 16rem;">
-          <div class="card-body">
-            <h5 class="card-title">${acontecimiento.fecha}</h5>              
-            <p class="card-text">${acontecimiento.acontecimiento}</p>
-            
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carouselModal" onclick="showEditarModal(${acontecimiento.id_acontecimiento}, '${acontecimiento.fecha}', '${acontecimiento.acontecimiento}')">Editar</button>
+          htmlAconts+=
+          `
+            <div class="card" style="width: 16rem;">
+              <div class="card-body">
+                <h5 class="card-title">${acontecimiento.fecha}</h5>              
+                <p class="card-text">${acontecimiento.acontecimiento}</p>
+                
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carouselModal" onclick="showEditarModal(${acontecimiento.id_acontecimiento}, '${acontecimiento.fecha}', '${acontecimiento.acontecimiento}')">Editar</button>
 
-
-
-          </div>
-        </div>        
-      `;
+              </div>
+            </div>        
+          `;
     });
+
+
+htmlAconts+=
+`
+<div class="card">
+  <div class="card-header">
+    SIHCA
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">Nuevo acontecmiento</h5>
+    <p class="card-text">Sí ya tienes una cuenta, puedes agregar un acontecimiento nuevo a este rasgo</p>        
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#carouselModal" onclick="showModalNuevoAcontecimiento(${rasgo.id_rasgo}, '${rasgo.nom_rasgo}')">Agregar</button>
+  </div>
+</div>`
+
+
+
+
     document.getElementById("acontecimientos").innerHTML=htmlAconts;
       
-
-
-
-
-    
-
 
 
     }
@@ -460,12 +476,165 @@ const url = `http://${host}:${port}/spatyal/getAcontecimientosByRasgo/${rasgo.id
 
 }
 
+function showModalNuevoAcontecimiento(id_rasgo, nom_rasgo){
+  console.log(id_rasgo);
+
+  document.getElementById("carouselModalLabel").innerHTML=`<h5>${nom_rasgo}</h5>`
+  document.getElementById("modalic").innerHTML=
+  `
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white text-center">
+            <h4>Nuevo acontecimiento</h4>
+          </div>
+          <div class="card-body">            
+              <div class="mb-3">
+                <label for="fechaAcont" class="form-label">Fecha</label>
+                <input type="date" id="fechaAcont" name="fechaAcont" class="form-control" required >                    
+              </div>
+
+              <div class="mb-3">
+                <label for="acontecimiento" class="form-label">Descripción del acontecimientox</label>
+                <textarea class="form-control" id="acontecimiento" placeholder="Describe el acontecimiento" rows="10" required ></textarea>
+              </div>
+
+              <button class="btn btn-success w-100" >Guardar</button>                  
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>       
+  `;
+
+
+
+  const token = localStorage.getItem('token'); // Asegúrate de que la clave sea correcta
+
+  if (token){
+
+  fetch(`http://${host}:${port}/spatyal/updateAcontecimiento/${id_acontecimiento}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    },
+    body: JSON.stringify({
+      "fecha": fecha,
+      "acontecimiento": acontecimiento
+    })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Error en la petición');
+    }
+    return response.json();
+  })
+  .then(data => {    
+    document.getElementById("modalic").innerHTML=`
+      <div class="card text-center">
+        <div class="card-header">
+          INEGI SIHCA
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Confirmación</h5>
+          <p class="card-text">El acontecimiento se a actualizado correctamente</p>
+          <button  class="btn btn-success"  data-bs-dismiss="modal" aria-label="Cerrar">Cerrar</button>
+        </div>
+      </div>
+    `;
+  })
+  .catch(error => {
+    console.error('Hubo un problema con la solicitud PUT:', error);
+  });
+
+  }
+
+}
+
+function actualizarAcontecimiento(id_acontecimiento){
+
+
+  fecha=document.getElementById("fechaAcont").value;
+  acontecimiento=document.getElementById("acontecimiento").value;  
+
+  document.getElementById("modalic").innerHTML=`
+<div class="spinner-border text-primary" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>
+<div class="spinner-border text-secondary" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>
+  `;
+
+  const token = localStorage.getItem('token'); // Asegúrate de que la clave sea correcta
+
+  if (token){
+
+  fetch(`http://${host}:${port}/spatyal/updateAcontecimiento/${id_acontecimiento}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    },
+    body: JSON.stringify({
+      "fecha": fecha,
+      "acontecimiento": acontecimiento
+    })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Error en la petición');
+    }
+    return response.json();
+  })
+  .then(data => {    
+    document.getElementById("modalic").innerHTML=`
+      <div class="card text-center">
+        <div class="card-header">
+          INEGI SIHCA
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Confirmación</h5>
+          <p class="card-text">El acontecimiento se a actualizado correctamente</p>
+          <button  class="btn btn-success"  data-bs-dismiss="modal" aria-label="Cerrar">Cerrar</button>
+        </div>
+      </div>
+    `;
+  })
+  .catch(error => {
+    console.error('Hubo un problema con la solicitud PUT:', error);
+  });
+
+  }
+
+
+}
+
+
 
 function showEditarModal(id_acontecimiento, fecha, acontecimiento){
   
   document.getElementById("carouselModalLabel").innerHTML=`<h5 class="modal-title" id="carouselModalLabel">Editar acontecimiento</h5>`;
   const token = localStorage.getItem("token");
   if (token){
+
+
+let [dia, mes, anio] = fecha.split("/"); // Separa por "/"
+
+if (parseInt(dia) < 10){
+  console.log(dia);
+  dia= "0"+dia;
+}
+
+if (parseInt(mes) < 10){
+  console.log(mes);
+  mes= "0"+mes;
+}
+
+const fechaFormateada = `${anio}-${mes}-${dia}`;  // Reordena como Año/Mes/Día
+
       editarHTML=`
       <div class="container mt-5">
         <div class="row justify-content-center">
@@ -475,17 +644,18 @@ function showEditarModal(id_acontecimiento, fecha, acontecimiento){
                 <h4>Editar acontecimiento ${id_acontecimiento}</h4>
               </div>
               <div class="card-body">
-                <form action="procesar.php" method="POST">
+                
                   <div class="mb-3">
-                    <label for="fecha" class="form-label">Fecha</label>
-                    <input type="date" id="fecha" name="fecha" class="form-control" required value="${fecha}">
+                    <label for="fechaAcont" class="form-label">Fecha</label>
+                    <input type="date" id="fechaAcont" name="fechaAcont" class="form-control" required value="${fechaFormateada}">                    
                   </div>
+
                   <div class="mb-3">
-                    <label for="acontecimiento" class="form-label">Acontecimiento</label>
-                    <input type="text" id="acontecimiento" name="acontecimiento" class="form-control" placeholder="Describe el acontecimiento" required value="${acontecimiento}">
+                    <label for="acontecimiento" class="form-label">Descripción del acontecimiento</label>
+                    <textarea class="form-control" id="acontecimiento" placeholder="Describe el acontecimiento" rows="10" required >${acontecimiento}</textarea>
                   </div>
-                  <button type="submit" class="btn btn-success w-100">Guardar</button>
-                </form>
+
+                  <button class="btn btn-success w-100" onclick="actualizarAcontecimiento(${id_acontecimiento})">Guardar</button>                  
               </div>
             </div>
           </div>
@@ -506,13 +676,14 @@ function showEditarModal(id_acontecimiento, fecha, acontecimiento){
                 <form action="procesar.php" method="POST">
                   <div class="mb-3">
                     <label for="fecha" class="form-label">Fecha</label>
-                    <input type="date" id="fecha" name="fecha" class="form-control" required>
+                    <input type="date" id="fechaAcont" name="fechaAcont" class="form-control" required value="23-07-2007">
+                    
                   </div>
                   <div class="mb-3">
                     <label for="acontecimiento" class="form-label">Acontecimiento</label>
-                    <input type="text" id="acontecimiento" name="acontecimiento" class="form-control" placeholder="Describe el acontecimiento" required>
+                    <input type="text" id="acontecimiento" name="acontecimiento" class="form-control" placeholder="Describe el acontecimiento" required>                    
                   </div>
-                  <button type="submit" class="btn btn-success w-100">Guardar</button>
+                  <button type="submit" class="btn btn-success w-100">Guardar</button>                  
                 </form>
               </div>
             </div>
@@ -589,15 +760,6 @@ function showEditarModal(id_acontecimiento, fecha, acontecimiento){
     });
 
   }
-
-
-
-
-
-
-
-
-
 
 
 }
