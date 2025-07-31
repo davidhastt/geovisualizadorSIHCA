@@ -292,9 +292,11 @@ conceptos.id_concepto=3 AND rasgos.id_capital=15 AND nombres_rasgos.id_anio = 1 
 Esto te quedaste haciendo el 29 de julio de 2025 (frontend)
 
 actualizar acontecimiento 2 ok ok
-insertar acontecimiento 2 ok muestra el modal con los camopos falta que inserte
+insertar acontecimiento 2 ok ok muestra el modal con los campos falta que inserte
 insertar rasgo 5 OK
 obtener años 2 ok
+mostrar imagen
+cargar imagen
 
 
 
